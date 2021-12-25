@@ -40,10 +40,18 @@ class Dashboard extends Component {
   /*
   selectPanel must be an arrow function because of how they handle this context. Arrow functions are designed to alter this behaviour in a specific way. The binding is not dynamic; it is is based on where the function is declared.
   */
-  selectPanel = id => {
-    this.setState({
-     focused: id
-    });
+  // Would be an Arrow Function
+  // ex. selectPanel = id => {
+    // this.setState({
+    //   focused: id
+    //  });
+
+  // Instance Method
+  selectPanel(id) {
+    //By adding prevSate it allow you to click on a panel to enlarge and then click again to go back to show all panels
+    this.setState(prevState => ({
+     focused: prevState.focused !== null ? null : id
+    }));
   }
 
   
@@ -64,11 +72,11 @@ class Dashboard extends Component {
     .map(panel => (
       <Panel 
         key={panel.id}
-        id={panel.id}
+        // id={panel.id}
         label={panel.label}
         value={panel.value}
         // We have to use this.selectPanel because we are passing a reference to the instance method as a prop.
-        onSelect={this.selectPanel}
+        onSelect={event => this.selectPanel(panel.id)}
       />
     ));
     console.log("panels", panels);
