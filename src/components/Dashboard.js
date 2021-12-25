@@ -3,6 +3,7 @@ import React, { Component } from "react";
 import classnames from "classnames";
 
 import Loading from "./Loading.js";
+import Panel from "./Panel.js";
 
 const data = [
   {
@@ -32,17 +33,48 @@ class Dashboard extends Component {
 
   state = {
   // loading: true
-  loading: false
+  loading: false,
+  focused: null
   }
 
+  /*
+  selectPanel must be an arrow function because of how they handle this context. Arrow functions are designed to alter this behaviour in a specific way. The binding is not dynamic; it is is based on where the function is declared.
+  */
+  selectPanel = id => {
+    this.setState({
+     focused: id
+    });
+  }
+
+  
   render() {
-    const dashboardClasses = classnames("dashboard");
+
+    const dashboardClasses = classnames("dashboard", {
+      "dashboard--focused": this.state.focused
+     });
 
     if (this.state.loading) {
       return <Loading />
     }
 
-    return <main className={dashboardClasses} />;
+    const panels = data
+    .filter(
+      panel => this.state.focused === null || this.state.focused === panel.id
+    )
+    .map(panel => (
+      <Panel 
+        key={panel.id}
+        id={panel.id}
+        label={panel.label}
+        value={panel.value}
+        // We have to use this.selectPanel because we are passing a reference to the instance method as a prop.
+        onSelect={this.selectPanel}
+      />
+    ));
+    console.log("panels", panels);
+
+    // return <main className={dashboardClasses} />;
+    return <main className={dashboardClasses}>{panels}</main>;
   }
 }
 
